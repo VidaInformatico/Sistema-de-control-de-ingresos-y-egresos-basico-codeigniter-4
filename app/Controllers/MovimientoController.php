@@ -26,13 +26,14 @@ class MovimientoController extends BaseController
 
     public function new()
     {
-        $movimientoModel = new Comprobante();
-        $data['comprobantes'] = $movimientoModel->findAll();
+        $comprobanteModel = new Comprobante();
+        $data['comprobantes'] = $comprobanteModel->findAll();
         return view('admin/movimientos/create', $data);
     }
 
     public function create()
     {
+
         $data = [];
 
         if ($this->request->getMethod() === 'post') {
@@ -42,9 +43,8 @@ class MovimientoController extends BaseController
                 'comprobante' => 'required',
                 'radio-switch-name' => 'required',
             ];
-
+            $movimientoModel = new Movimiento();
             if ($this->validate($validationRules)) {
-                $movimientoModel = new Movimiento();
                 $cajaModel = new Caja();
                 $caja = $cajaModel->where(['estado' => 1, 'id_usuario' => $this->session->user_id])->first();
                 if (empty($caja)) {
@@ -80,6 +80,8 @@ class MovimientoController extends BaseController
                     return redirect()->to('admin/movimientos')->with('success', 'Movimiento creada exitosamente.');
                 }
             } else {
+                $comprobanteModel = new Comprobante();
+                $data['comprobantes'] = $comprobanteModel->findAll();
                 $data['validation'] = $this->validator;
             }
         }
@@ -175,9 +177,11 @@ class MovimientoController extends BaseController
             } else {
                 // La validación falló, vuelve a cargar la vista con los errores
                 $data['validation'] = $this->validator;
+                $comprobanteModel = new Comprobante();
+                $data['comprobantes'] = $comprobanteModel->findAll();
             }
 
-            $data['comprobante'] = $comprobante;
+            $data['movimiento'] = $comprobante;
             return view('admin/movimientos/edit', $data);
         }
     }
